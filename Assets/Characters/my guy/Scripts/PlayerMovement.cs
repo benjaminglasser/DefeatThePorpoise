@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody rb;
 
+    [SerializeField] private Transform cameraTransform;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -36,7 +38,8 @@ public class PlayerMovement : MonoBehaviour
         // Create a direction from WASD and the vertical controls.
         Vector3 movementDirection = new Vector3(horizontalInput.x, verticalInput, horizontalInput.y);
 
-        
+        // Rotate the movement direction based on the camera's rotation.
+        movementDirection = Quaternion.AngleAxis(cameraTransform.eulerAngles.y, Vector3.up) * movementDirection;
 
         Vector3 velocity = new Vector3(
             movementDirection.x * speed,
