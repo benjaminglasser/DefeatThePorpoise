@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8964685468006931036}
   - component: {fileID: 503159357792258049}
   - component: {fileID: -5841718400276965387}
+  - component: {fileID: 8540173930867602511}
   m_Layer: 0
   m_Name: glowing orb
   m_TagString: Untagged
@@ -125,3 +126,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c2e59c0a9e0f646a6b89ba4bc25bde28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OrbGather
+--- !u!114 &8540173930867602511
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7910962554714856255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f3b6db43a2664606b99e8840a105770, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WireframeMeshData
