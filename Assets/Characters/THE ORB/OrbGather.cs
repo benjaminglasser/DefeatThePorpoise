@@ -8,10 +8,11 @@ public class OrbGather : MonoBehaviour
             if (other.CompareTag("Player"))
             {
                 Destroy(gameObject);
-                // Debug.Log("Hello!!!");
             }
         }
-        
+
+    
+    
         
 
 }
