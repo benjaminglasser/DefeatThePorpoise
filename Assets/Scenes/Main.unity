@@ -149,9 +149,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CreateAsteroidField
   asteroidPrefab: {fileID: 7910962554714856255, guid: 52dd04b3686ed4a9db2d993275f07b41, type: 3}
-  numberOfObjects: 300
-  fieldSize: {x: 500, y: 500, z: 500}
-  minMaxScale: {x: 4, y: 10}
+  player: {fileID: 1056448246}
+  chunkSize: 1245
+  loadRadius: 4
+  unloadRadius: 6
+  asteroidsPerChunk: 2
+  minMaxScale: {x: 12, y: 50}
+  worldSeed: 12345
 --- !u!4 &244808
 Transform:
   m_ObjectHideFlags: 0
@@ -322,8 +326,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463317145}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -9.551014e-26, z: -3.0952356e-27, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: 0.12846904, y: -3.4014495e-24, z: 6.6678576e-25, w: 0.9917135}
+  m_LocalPosition: {x: 0, y: 2.3400002, z: -5.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -405,11 +409,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
   TrackerSettings:
     BindingMode: 3
-    PositionDamping: {x: 1.5, y: 1.5, z: 2}
+    PositionDamping: {x: 0.2, y: 0.15, z: 0.08}
     AngularDampingMode: 0
     RotationDamping: {x: 0, y: 0, z: 0}
     QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 0, z: -10}
+  FollowOffset: {x: 0, y: 1.5, z: -10}
 --- !u!114 &463317152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
   Composition:
-    ScreenPosition: {x: 0, y: 0}
+    ScreenPosition: {x: 0, y: -0.15}
     DeadZone:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
@@ -464,7 +468,7 @@ Transform:
   m_GameObject: {fileID: 664720408}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.84, z: 4.54}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -601,8 +605,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 719762862}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -9.551014e-26, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalRotation: {x: 0.12846904, y: -3.371653e-24, z: 4.367723e-25, w: 0.9917135}
+  m_LocalPosition: {x: 0, y: 2.3400002, z: -5.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -811,14 +815,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::AltCharacterController
   throttleIncrement: 15
   maxThrust: 200
-  responsiveness: 8
-  inputSmoothness: 4
-  angularDamping: 2
+  responsiveness: 12
+  inputSmoothness: 8
+  angularDamping: 5
   maxAngularVelocity: 2.5
   visualModel: {fileID: 0}
-  visualBankAngle: 35
-  visualPitchAngle: 12
-  visualTurnSmoothness: 5
+  visualBankAngle: 30
+  visualPitchAngle: 10
+  visualTurnSmoothness: 8
 --- !u!1001 &1098622878
 PrefabInstance:
   m_ObjectHideFlags: 0
