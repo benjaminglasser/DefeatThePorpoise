@@ -1,70 +1,174 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AltCharacterController : MonoBehaviour
 {
-    [Header ("Plane Stats")]
-    [Tooltip ("How much the throttle ramps up or down")]
+    [Header("Movement")]
     public float throttleIncrement = 5f;
-    [Tooltip ("Maximum engine thrust when at 100% throttle")]
     public float maxThrust = 200f;
-    [Tooltip ("How responsive the plane is when rolling, pitching, or yawing")]
     public float responsiveness = 10f;
 
+    [Header("Input Smoothing")]
+    [Tooltip("Higher = controls react faster")]
+    public float inputSmoothness = 5f;
+
+    [Header("Rotation Feel")]
+    [Tooltip("Helps stop endless spinning")]
+    public float angularDamping = 2f;
+
+    [Tooltip("Limits how fast the Rigidbody can rotate")]
+    public float maxAngularVelocity = 3f;
+
+    [Header("Visual Model")]
+    [Tooltip("Drag the dolphin visual/model child here")]
+    public Transform visualModel;
+
+    [Tooltip("Extra visual roll when rolling")]
+    public float visualBankAngle = 35f;
+
+    [Tooltip("Extra visual pitch when pitching")]
+    public float visualPitchAngle = 12f;
+
+    [Tooltip("How quickly the dolphin model eases into turns")]
+    public float visualTurnSmoothness = 5f;
+
+
     private float throttle;
+
     private float roll;
     private float pitch;
     private float yaw;
 
+    private float targetRoll;
+    private float targetPitch;
+    private float targetYaw;
+
+    private Rigidbody rb;
+    private AudioSource dolphinSound;
+
+    private Quaternion visualStartingRotation;
+
+
     private float responseModifier
     {
-        get {return (rb.mass / 10f) * responsiveness; }
+        get
+        {
+            return (rb.mass / 10f) * responsiveness;
+        }
     }
-    
 
-    Rigidbody rb;
-    AudioSource dolphinSound;
 
-    private void Awake() 
+    private void Awake()
     {
-    rb = GetComponent<Rigidbody>();
-    dolphinSound = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();
+        dolphinSound = GetComponent<AudioSource>();
+
+        rb.angularDamping = angularDamping;
+        rb.maxAngularVelocity = maxAngularVelocity;
+
+        if (visualModel != null)
+        {
+            visualStartingRotation = visualModel.localRotation;
+        }
     }
+
+
+    private void Update()
+    {
+        HandleInputs();
+        SmoothInputs();
+        UpdateVisualMovement();
+
+        if (dolphinSound != null)
+        {
+            dolphinSound.volume = throttle * 0.01f;
+        }
+    }
+
+
     private void HandleInputs()
     {
-        // Set rotational values from our axis inputs.
-        roll = Input.GetAxis("Roll");
-        pitch = Input.GetAxis("Pitch");
-        yaw = Input.GetAxis("Yaw");
+        // Get desired rotation input
+        targetRoll = Input.GetAxis("Roll");
+        targetPitch = Input.GetAxis("Pitch");
+        targetYaw = Input.GetAxis("Yaw");
 
-        // Handle throttle value being sure to clamp it between 0 and 100.
-        if (Input.GetKeyDown(KeyCode.Space))
+        // Hold Space to increase thrust
+        if (Input.GetKey(KeyCode.Space))
         {
-        //add throttleIncrement to the throttle value over time while the space key is held down
-        throttle += throttleIncrement * Time.deltaTime;
+            throttle += throttleIncrement * Time.deltaTime;
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else
         {
             throttle -= throttleIncrement * Time.deltaTime;
         }
+
         throttle = Mathf.Clamp(throttle, 0f, 100f);
-        }
+    }
 
-        private void Update()
-        {
-            HandleInputs();
-            // Set the volume of the dolphin sound based on the throttle value.
-            dolphinSound.volume = throttle * 0.01f;
-        }
 
-        private void FixedUpdate()
-        {
-            // Apply the thrust force to the plane.
-            rb.AddForce(maxThrust * throttle * transform.forward);
+    private void SmoothInputs()
+    {
+        roll = Mathf.Lerp(
+            roll,
+            targetRoll,
+            inputSmoothness * Time.deltaTime
+        );
 
-            // Apply torque to the plane based on our input values and responsiveness.
-            rb.AddRelativeTorque(new Vector3(pitch, yaw, -roll) * responseModifier);
-        }
-    
+        pitch = Mathf.Lerp(
+            pitch,
+            targetPitch,
+            inputSmoothness * Time.deltaTime
+        );
+
+        yaw = Mathf.Lerp(
+            yaw,
+            targetYaw,
+            inputSmoothness * Time.deltaTime
+        );
+    }
+
+
+    private void FixedUpdate()
+    {
+        // Forward movement
+        rb.AddForce(
+            maxThrust * throttle * transform.forward
+        );
+
+        // Physical rotation
+        Vector3 torque = new Vector3(
+            pitch,
+            yaw,
+            -roll
+        );
+
+        rb.AddRelativeTorque(
+            torque * responseModifier
+        );
+    }
+
+
+    private void UpdateVisualMovement()
+    {
+        if (visualModel == null)
+            return;
+
+        float bank = -roll * visualBankAngle;
+        float nosePitch = pitch * visualPitchAngle;
+
+        Quaternion targetRotation =
+            visualStartingRotation *
+            Quaternion.Euler(
+                nosePitch,
+                0f,
+                bank
+            );
+
+        visualModel.localRotation =
+            Quaternion.Slerp(
+                visualModel.localRotation,
+                targetRotation,
+                visualTurnSmoothness * Time.deltaTime
+            );
+    }
 }

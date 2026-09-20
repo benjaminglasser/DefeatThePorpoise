@@ -305,7 +305,7 @@ GameObject:
   - component: {fileID: 463317146}
   - component: {fileID: 463317149}
   - component: {fileID: 463317151}
-  - component: {fileID: 463317147}
+  - component: {fileID: 463317152}
   - component: {fileID: 463317150}
   m_Layer: 0
   m_Name: CinemachineCamera
@@ -322,42 +322,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 463317145}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 2.1175824e-22, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: -9.551014e-26, z: -3.0952356e-27, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1056448246}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &463317147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 463317145}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
-  Composition:
-    ScreenPosition: {x: 0, y: 0}
-    DeadZone:
-      Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 0, z: 0}
-  Damping: {x: 0.5, y: 0.5}
-  Lookahead:
-    Enabled: 0
-    Time: 0.458
-    Smoothing: 9.6
-    IgnoreY: 0
 --- !u!114 &463317149
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -434,11 +405,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
   TrackerSettings:
     BindingMode: 3
-    PositionDamping: {x: 0.5, y: 0.5, z: 0.3}
+    PositionDamping: {x: 1.5, y: 1.5, z: 2}
     AngularDampingMode: 0
     RotationDamping: {x: 0, y: 0, z: 0}
     QuaternionDamping: 1
   FollowOffset: {x: 0, y: 0, z: -10}
+--- !u!114 &463317152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463317145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
+  Composition:
+    ScreenPosition: {x: 0, y: 0}
+    DeadZone:
+      Enabled: 0
+      Size: {x: 0.2, y: 0.2}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
+  CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!1 &664720408
 GameObject:
   m_ObjectHideFlags: 0
@@ -601,7 +601,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 719762862}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: -9.551014e-26, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -700,21 +700,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 6e19e3a0321ea4a3aa9f6135a7fcce09, type: 3}
   m_PrefabInstance: {fileID: 1098622878}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1056448247
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1056448239}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7138026c770964b23a4a4c86f2889dcd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlaneController
-  throttleIncrement: 75000
-  maxThrust: 200
-  responsiveness: 10
 --- !u!82 &1056448248
 AudioSource:
   m_ObjectHideFlags: 0
@@ -812,6 +797,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1056448249
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056448239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5b540faf45044ea894fe3d247ca0a4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AltCharacterController
+  throttleIncrement: 15
+  maxThrust: 200
+  responsiveness: 8
+  inputSmoothness: 4
+  angularDamping: 2
+  maxAngularVelocity: 2.5
+  visualModel: {fileID: 0}
+  visualBankAngle: 35
+  visualPitchAngle: 12
+  visualTurnSmoothness: 5
 --- !u!1001 &1098622878
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -923,7 +930,7 @@ PrefabInstance:
       addedObject: {fileID: 1056448245}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e19e3a0321ea4a3aa9f6135a7fcce09, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1056448247}
+      addedObject: {fileID: 1056448249}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e19e3a0321ea4a3aa9f6135a7fcce09, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1056448248}
