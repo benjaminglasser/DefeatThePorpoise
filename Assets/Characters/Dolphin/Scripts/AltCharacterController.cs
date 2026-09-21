@@ -22,7 +22,7 @@ public class AltCharacterController : MonoBehaviour
     [Tooltip("Drag the dolphin visual/model child here")]
     public Transform visualModel;
 
-    [Tooltip("Extra visual roll when rolling")]
+    [Tooltip("Maximum visual bank angle")]
     public float visualBankAngle = 35f;
 
     [Tooltip("Extra visual pitch when pitching")]
@@ -30,6 +30,13 @@ public class AltCharacterController : MonoBehaviour
 
     [Tooltip("How quickly the dolphin model eases into turns")]
     public float visualTurnSmoothness = 5f;
+
+    [Header("Natural Banking")]
+    [Tooltip("How much roll input contributes to visual banking")]
+    public float rollBankInfluence = 0.7f;
+
+    [Tooltip("How much yaw input contributes to visual banking")]
+    public float yawBankInfluence = 1f;
 
 
     private float throttle;
@@ -87,7 +94,7 @@ public class AltCharacterController : MonoBehaviour
 
     private void HandleInputs()
     {
-        // Get desired rotation input
+        // Desired rotation input
         targetRoll = Input.GetAxis("Roll");
         targetPitch = Input.GetAxis("Pitch");
         targetYaw = Input.GetAxis("Yaw");
@@ -130,7 +137,7 @@ public class AltCharacterController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Forward movement
+        // Forward thrust
         rb.AddForce(
             maxThrust * throttle * transform.forward
         );
@@ -153,8 +160,25 @@ public class AltCharacterController : MonoBehaviour
         if (visualModel == null)
             return;
 
-        float bank = -roll * visualBankAngle;
-        float nosePitch = pitch * visualPitchAngle;
+        // Roll input banks the dolphin.
+        // Yaw input ALSO banks the dolphin into the turn.
+        float bankInput =
+            (-roll * rollBankInfluence) +
+            (-yaw * yawBankInfluence);
+
+        // Clamp so combined yaw + roll can't produce absurd banking.
+        bankInput = Mathf.Clamp(
+            bankInput,
+            -1f,
+            1f
+        );
+
+        float bank =
+            bankInput * visualBankAngle;
+
+        // Slight visual exaggeration of pitch
+        float nosePitch =
+            pitch * visualPitchAngle;
 
         Quaternion targetRotation =
             visualStartingRotation *

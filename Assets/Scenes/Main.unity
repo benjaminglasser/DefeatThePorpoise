@@ -347,6 +347,26 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &431042454 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3707915220850780426, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+  m_PrefabInstance: {fileID: 250288888577653871}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &431042458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431042454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faba86e7b71a5473088c994f23cf0591, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpeedParticles
+  dolphin: {fileID: 0}
+  speedVFX: {fileID: 0}
+  maxSpeed: 70
 --- !u!1 &463317145
 GameObject:
   m_ObjectHideFlags: 0
@@ -739,6 +759,11 @@ Transform:
   - {fileID: 719762866}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1484483993 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5024265561261429398, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+  m_PrefabInstance: {fileID: 250288888577653871}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &250288888577653871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -747,6 +772,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 327400312803774270, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+      propertyPath: visualModel
+      value: 
+      objectReference: {fileID: 1484483993}
+    - target: {fileID: 327400312803774270, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+      propertyPath: visualBankAngle
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 327400312803774270, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+      propertyPath: visualPitchAngle
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 327400312803774270, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+      propertyPath: visualTurnSmoothness
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 2967990361010438239, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.7
@@ -858,7 +899,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3707915220850780426, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 431042458}
   m_SourcePrefab: {fileID: 100100000, guid: 6a8f576c0ab4a4790a89313c4ebc9263, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
