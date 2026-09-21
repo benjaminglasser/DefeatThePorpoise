@@ -6,16 +6,21 @@ public class DolphinShooter : MonoBehaviour
     public Camera playerCamera;
     public Transform projectileSpawnPoint;
     public GameObject projectilePrefab;
+    public Rigidbody dolphinRigidbody;
 
     [Header("Shooting")]
-    public float projectileSpeed = 150f;
-    public float aimDistance = 1000f;
+    [Tooltip("Base projectile speed")]
+    public float projectileSpeed = 4000f;
 
-    private Rigidbody dolphinRigidbody;
+    [Tooltip("How far along the mouse ray to aim")]
+    public float aimDistance = 4000f;
 
     private void Awake()
     {
-        dolphinRigidbody = GetComponentInParent<Rigidbody>();
+        if (dolphinRigidbody == null)
+        {
+            dolphinRigidbody = GetComponentInParent<Rigidbody>();
+        }
     }
 
     private void Update()
@@ -28,29 +33,36 @@ public class DolphinShooter : MonoBehaviour
 
     private void Shoot()
     {
-        if (playerCamera == null ||
+        if (
+            playerCamera == null ||
             projectileSpawnPoint == null ||
-            projectilePrefab == null)
+            projectilePrefab == null
+        )
         {
             return;
         }
 
-        // Ray through the mouse cursor
-        Ray mouseRay =
+        // Ray directly through mouse cursor
+        Ray cursorRay =
             playerCamera.ScreenPointToRay(Input.mousePosition);
 
-        // Distant point along mouse ray
+        // Pick a distant point along that ray
         Vector3 aimPoint =
-            mouseRay.GetPoint(aimDistance);
+            cursorRay.GetPoint(aimDistance);
 
-        // Direction from dolphin muzzle toward mouse
+        // Projectile begins exactly at the dolphin's muzzle
+        Vector3 spawnPosition =
+            projectileSpawnPoint.position;
+
+        // Direction from muzzle toward the cursor
         Vector3 shootDirection =
-            (aimPoint - projectileSpawnPoint.position).normalized;
+            (aimPoint - spawnPosition).normalized;
 
+        // Create the projectile
         GameObject projectile =
             Instantiate(
                 projectilePrefab,
-                projectileSpawnPoint.position,
+                spawnPosition,
                 Quaternion.LookRotation(shootDirection)
             );
 
@@ -60,12 +72,14 @@ public class DolphinShooter : MonoBehaviour
         if (bullet == null)
         {
             Debug.LogError(
-                "Projectile prefab needs SimpleProjectile."
+                "Projectile prefab is missing SimpleProjectile."
             );
 
             return;
         }
 
+        // Add dolphin's current speed so the bolt
+        // always moves faster than the player.
         float dolphinSpeed = 0f;
 
         if (dolphinRigidbody != null)
@@ -74,9 +88,15 @@ public class DolphinShooter : MonoBehaviour
                 dolphinRigidbody.linearVelocity.magnitude;
         }
 
+        float totalProjectileSpeed =
+            projectileSpeed + dolphinSpeed;
+
+        // Fire the projectile and give it the muzzle
+        // so its Line Renderer can stay attached.
         bullet.Fire(
             shootDirection,
-            projectileSpeed + dolphinSpeed
+            totalProjectileSpeed,
+            projectileSpawnPoint
         );
     }
 }

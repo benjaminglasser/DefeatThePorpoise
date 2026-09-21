@@ -59,7 +59,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: -0.055, z: -1.658}
-  m_LocalScale: {x: 2.47, y: 0.15, z: 1}
+  m_LocalScale: {x: 1, y: 0.15, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3224839328449395003}
@@ -254,7 +254,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.5176469, b: 1, a: 1}
+      maxColor: {r: 0, g: 0.6209738, b: 1, a: 1}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -318,7 +318,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0.006
+      scalar: 0.005
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -635,7 +635,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 4000
+    maxNumParticles: 100000
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -696,7 +696,7 @@ ParticleSystem:
     serializedVersion: 6
     enabled: 1
     type: 4
-    angle: 0
+    angle: 2.31
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
     radiusThickness: 1
@@ -770,7 +770,7 @@ ParticleSystem:
     m_SpriteRenderer: {fileID: 0}
     m_UseMeshMaterialIndex: 0
     m_UseMeshColors: 1
-    alignToDirection: 0
+    alignToDirection: 1
     m_Texture: {fileID: 0}
     m_TextureClipChannel: 3
     m_TextureClipThreshold: 0
@@ -780,7 +780,7 @@ ParticleSystem:
     m_TextureBilinearFiltering: 0
     randomDirectionAmount: 0
     sphericalDirectionAmount: 0
-    randomPositionAmount: 0
+    randomPositionAmount: 0.1
     radius:
       value: 0.12
       mode: 0
@@ -839,7 +839,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 0
+      value: 360
       mode: 0
       spread: 0
       speed:
@@ -901,7 +901,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 300
+      scalar: 1000
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -2716,11 +2716,11 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
   NoiseModule:
-    enabled: 0
+    enabled: 1
     strength:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1
+      scalar: 0.07
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -2878,7 +2878,7 @@ ParticleSystem:
         m_RotationOrder: 4
     separateAxes: 0
     frequency: 0.5
-    damping: 1
+    damping: 0
     octaves: 1
     octaveMultiplier: 0.5
     octaveScale: 2
@@ -2886,7 +2886,7 @@ ParticleSystem:
     scrollSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 0
+      scalar: 0.4
       minScalar: 0
       maxCurve:
         serializedVersion: 2
@@ -4102,7 +4102,7 @@ ParticleSystem:
     widthOverTrail:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 2
+      scalar: 0.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -4924,7 +4924,7 @@ Transform:
   m_GameObject: {fileID: 5697675909270481901}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.13, z: 1.26}
+  m_LocalPosition: {x: 0, y: -0.13, z: 1.04}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5154,11 +5154,10 @@ MonoBehaviour:
   playerCamera: {fileID: 0}
   projectileSpawnPoint: {fileID: 2967990361010438239}
   projectilePrefab: {fileID: 4628541908344457799, guid: bf58c167dc0bd4d28a2a3631d31fc33a, type: 3}
-  maxLockDistance: 1000
-  asteroidLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  projectileSpeed: 50
+  dolphinRigidbody: {fileID: 0}
+  projectileSpeed: 4000
+  aimDistance: 5000
+  spawnForwardOffset: 2
 --- !u!1001 &4770296712445703549
 PrefabInstance:
   m_ObjectHideFlags: 0
