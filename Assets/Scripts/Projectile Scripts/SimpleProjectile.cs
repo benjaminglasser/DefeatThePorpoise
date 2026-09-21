@@ -3,7 +3,7 @@ using UnityEngine;
 public class SimpleProjectile : MonoBehaviour
 {
     [Header("Movement")]
-    public float lifetime = 5f;
+    public float lifetime = 2f;
 
     [Header("Hit Detection")]
     public float hitRadius = 0.6f;
@@ -12,24 +12,20 @@ public class SimpleProjectile : MonoBehaviour
     [Header("Laser Visual")]
     public LineRenderer laserLine;
 
-    [Tooltip("How long the laser stays visible")]
     [Range(0.01f, 0.5f)]
     public float laserDuration = 0.08f;
 
-    [Tooltip("How quickly the visible laser tip catches up to the real projectile")]
-    public float laserVisualSpeed = 1200f;
+    [Tooltip("Higher = laser endpoint follows projectile more tightly")]
+    public float laserFollowSmoothness = 20f;
 
     private Vector3 direction;
     private float speed;
-
-    private bool fired = false;
+    private bool fired;
 
     private Transform muzzlePoint;
 
     private Vector3 visualLaserEnd;
-
     private float laserTimer;
-
 
     private void Awake()
     {
@@ -45,12 +41,10 @@ public class SimpleProjectile : MonoBehaviour
         }
     }
 
-
     private void Start()
     {
         Destroy(gameObject, lifetime);
     }
-
 
     public void Fire(
         Vector3 shootDirection,
@@ -68,6 +62,8 @@ public class SimpleProjectile : MonoBehaviour
 
         fired = true;
 
+        laserTimer = laserDuration;
+
         if (muzzlePoint != null)
         {
             visualLaserEnd = muzzlePoint.position;
@@ -77,14 +73,21 @@ public class SimpleProjectile : MonoBehaviour
             visualLaserEnd = transform.position;
         }
 
-        laserTimer = laserDuration;
-
         if (laserLine != null)
         {
             laserLine.enabled = true;
+
+            laserLine.SetPosition(
+                0,
+                muzzlePoint.position
+            );
+
+            laserLine.SetPosition(
+                1,
+                visualLaserEnd
+            );
         }
     }
-
 
     private void Update()
     {
@@ -101,7 +104,6 @@ public class SimpleProjectile : MonoBehaviour
         }
     }
 
-
     private void LateUpdate()
     {
         if (
@@ -114,28 +116,31 @@ public class SimpleProjectile : MonoBehaviour
             return;
         }
 
-        // Smoothly move the visible tip toward the
-        // actual high-speed projectile.
-        visualLaserEnd =
-            Vector3.MoveTowards(
-                visualLaserEnd,
-                transform.position,
-                laserVisualSpeed * Time.deltaTime
+        // Smoothly follow the REAL projectile position.
+        float smoothAmount =
+            1f - Mathf.Exp(
+                -laserFollowSmoothness * Time.deltaTime
             );
 
-        // Start stays locked to dolphin nose
+        visualLaserEnd =
+            Vector3.Lerp(
+                visualLaserEnd,
+                transform.position,
+                smoothAmount
+            );
+
+        // Muzzle end
         laserLine.SetPosition(
             0,
             muzzlePoint.position
         );
 
-        // End moves smoothly instead of jumping 60+ units/frame
+        // Smoothed visual end
         laserLine.SetPosition(
             1,
             visualLaserEnd
         );
     }
-
 
     private void MoveProjectile()
     {
@@ -146,7 +151,6 @@ public class SimpleProjectile : MonoBehaviour
 
         float distance =
             movement.magnitude;
-
 
         if (distance > 0f)
         {
@@ -166,9 +170,7 @@ public class SimpleProjectile : MonoBehaviour
                 if (orb != null)
                 {
                     orb.CollectOrb();
-
                     Destroy(gameObject);
-
                     return;
                 }
             }

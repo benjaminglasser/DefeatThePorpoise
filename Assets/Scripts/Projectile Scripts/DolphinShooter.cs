@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class DolphinShooter : MonoBehaviour
@@ -5,23 +6,35 @@ public class DolphinShooter : MonoBehaviour
     [Header("References")]
     public Camera playerCamera;
     public Transform projectileSpawnPoint;
-    public GameObject projectilePrefab;
-    public Rigidbody dolphinRigidbody;
+    public LineRenderer laserLine;
 
-    [Header("Shooting")]
-    [Tooltip("Base projectile speed")]
-    public float projectileSpeed = 4000f;
+    [Header("Targeting")]
+    public LayerMask asteroidLayer;
 
-    [Tooltip("How far along the mouse ray to aim")]
-    public float aimDistance = 4000f;
+    [Tooltip("Maximum distance the laser can travel")]
+    public float maxShootDistance = 1500f;
+
+    [Header("Laser Visual")]
+    [Tooltip("How long the laser stays visible")]
+    [Range(0.01f, 0.5f)]
+    public float laserDuration = 0.08f;
+
+    private Coroutine laserCoroutine;
+
+    private bool laserActive = false;
+    private Vector3 laserEndPoint;
+
 
     private void Awake()
     {
-        if (dolphinRigidbody == null)
+        if (laserLine != null)
         {
-            dolphinRigidbody = GetComponentInParent<Rigidbody>();
+            laserLine.positionCount = 2;
+            laserLine.useWorldSpace = true;
+            laserLine.enabled = false;
         }
     }
+
 
     private void Update()
     {
@@ -31,72 +44,142 @@ public class DolphinShooter : MonoBehaviour
         }
     }
 
+
+    private void LateUpdate()
+    {
+        // Keep the beginning of the beam attached
+        // to the dolphin's nose while it is visible.
+        if (
+            laserActive &&
+            laserLine != null &&
+            projectileSpawnPoint != null
+        )
+        {
+            laserLine.SetPosition(
+                0,
+                projectileSpawnPoint.position
+            );
+
+            laserLine.SetPosition(
+                1,
+                laserEndPoint
+            );
+        }
+    }
+
+
     private void Shoot()
     {
         if (
             playerCamera == null ||
             projectileSpawnPoint == null ||
-            projectilePrefab == null
+            laserLine == null
         )
         {
             return;
         }
 
-        // Ray directly through mouse cursor
-        Ray cursorRay =
-            playerCamera.ScreenPointToRay(Input.mousePosition);
-
-        // Pick a distant point along that ray
-        Vector3 aimPoint =
-            cursorRay.GetPoint(aimDistance);
-
-        // Projectile begins exactly at the dolphin's muzzle
-        Vector3 spawnPosition =
-            projectileSpawnPoint.position;
-
-        // Direction from muzzle toward the cursor
-        Vector3 shootDirection =
-            (aimPoint - spawnPosition).normalized;
-
-        // Create the projectile
-        GameObject projectile =
-            Instantiate(
-                projectilePrefab,
-                spawnPosition,
-                Quaternion.LookRotation(shootDirection)
+        // Ray directly through the mouse cursor
+        Ray mouseRay =
+            playerCamera.ScreenPointToRay(
+                Input.mousePosition
             );
 
-        SimpleProjectile bullet =
-            projectile.GetComponent<SimpleProjectile>();
 
-        if (bullet == null)
+        // Look specifically for something on the asteroid layer
+        if (Physics.Raycast(
+            mouseRay,
+            out RaycastHit hit,
+            maxShootDistance,
+            asteroidLayer,
+            QueryTriggerInteraction.Collide
+        ))
         {
-            Debug.LogError(
-                "Projectile prefab is missing SimpleProjectile."
-            );
+            // Stop the laser exactly where it hit
+            laserEndPoint = hit.point;
 
-            return;
+
+            // Find OrbGather on the hit object
+            // OR one of its parents
+            OrbGather orb =
+                hit.collider.GetComponentInParent<OrbGather>();
+
+
+            if (orb != null)
+            {
+                Debug.Log(
+                    "Laser hit orb: " +
+                    orb.gameObject.name
+                );
+
+                orb.CollectOrb();
+            }
+            else
+            {
+                Debug.LogWarning(
+                    "Laser hit an asteroid-layer object, " +
+                    "but no OrbGather component was found."
+                );
+            }
+        }
+        else
+        {
+            // No asteroid hit.
+            // Laser still shoots toward the cursor.
+            laserEndPoint =
+                mouseRay.GetPoint(maxShootDistance);
         }
 
-        // Add dolphin's current speed so the bolt
-        // always moves faster than the player.
-        float dolphinSpeed = 0f;
 
-        if (dolphinRigidbody != null)
-        {
-            dolphinSpeed =
-                dolphinRigidbody.linearVelocity.magnitude;
-        }
+        ShowLaser();
+    }
 
-        float totalProjectileSpeed =
-            projectileSpeed + dolphinSpeed;
 
-        // Fire the projectile and give it the muzzle
-        // so its Line Renderer can stay attached.
-        bullet.Fire(
-            shootDirection,
-            totalProjectileSpeed,
-            projectileSpawnPoint
+    private void ShowLaser()
+    {
+        laserActive = true;
+
+        laserLine.enabled = true;
+
+
+        laserLine.SetPosition(
+            0,
+            projectileSpawnPoint.position
         );
+
+        laserLine.SetPosition(
+            1,
+            laserEndPoint
+        );
+
+
+        if (laserCoroutine != null)
+        {
+            StopCoroutine(laserCoroutine);
+        }
+
+
+        laserCoroutine =
+            StartCoroutine(
+                HideLaserAfterDelay()
+            );
+    }
+
+
+    private IEnumerator HideLaserAfterDelay()
+    {
+        yield return new WaitForSeconds(
+            laserDuration
+        );
+
+
+        laserActive = false;
+
+        if (laserLine != null)
+        {
+            laserLine.enabled = false;
+        }
+
+        laserCoroutine = null;
     }
 }

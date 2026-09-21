@@ -128,8 +128,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 418a1d0f6776e421980f59782c65d28f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::orbMovement
-  minMoveSpeed: 10
-  maxMoveSpeed: 50
+  minMoveSpeed: 1
+  maxMoveSpeed: 7
   minRotationSpeed: 0.5
   maxRotationSpeed: 3
   wanderStrength: 0.25
