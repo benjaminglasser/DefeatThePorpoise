@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 1349425790400059694}
   - component: {fileID: 2105255870386316670}
   - component: {fileID: 1813313853101037557}
+  - component: {fileID: -3487431413858079985}
   m_Layer: 3
   m_Name: dolphin guy
   m_TagString: Player
@@ -110,9 +111,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   movementInput: {x: 0, y: 0}
   movementDirection: {x: 0, y: 0, z: 0}
-  lookInput: {x: 0, y: 0, z: 0}
   speed: 10
-  rotationSpeed: 100
 --- !u!136 &1813313853101037557
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -136,6 +135,26 @@ CapsuleCollider:
   m_Height: 2.4386716
   m_Direction: 2
   m_Center: {x: 0.002601266, y: 0.02760466, z: -0.46924227}
+--- !u!114 &-3487431413858079985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3347294504384602194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54095868b0c0d4ae8abfe1896eccc552, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DolphinShooter
+  playerCamera: {fileID: 0}
+  projectileSpawnPoint: {fileID: 0}
+  projectilePrefab: {fileID: 0}
+  maxLockDistance: 1000
+  asteroidLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  projectileSpeed: 60
 --- !u!1 &4001780122136013579
 GameObject:
   m_ObjectHideFlags: 0
