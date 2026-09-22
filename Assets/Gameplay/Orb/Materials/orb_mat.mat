@@ -110,7 +110,7 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _FadeFullyVisible: 550
+    - _FadeFullyVisible: 600
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
@@ -130,7 +130,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     - _baseAlpha: 1
-    - _fadeStart: 600
+    - _fadeStart: 900
     m_Colors:
     - _BaseColor: {r: 1, g: 0, b: 0.930164, a: 1}
     - _Color: {r: 2.6082366, g: 0, b: 2.3601627, a: 1}

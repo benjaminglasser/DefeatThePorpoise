@@ -150,11 +150,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CreateAsteroidField
   asteroidPrefab: {fileID: 7910962554714856255, guid: 52dd04b3686ed4a9db2d993275f07b41, type: 3}
   player: {fileID: 749467208}
-  chunkSize: 100
+  chunkSize: 200
   loadRadius: 4
   unloadRadius: 7
-  asteroidsPerChunk: 2
-  minMaxScale: {x: 0.35, y: 9}
+  asteroidsPerChunk: 1
+  minMaxScale: {x: 1, y: 12}
   forwardLoadChunks: 4
   worldSeed: 12345
 --- !u!4 &244808
