@@ -9,19 +9,23 @@ public class CreateAsteroidField : MonoBehaviour
 
     [Header("Chunk Settings")]
     [Tooltip("Physical size of each chunk")]
-    public float chunkSize = 125f;
+    public float chunkSize = 100f;
 
-    [Tooltip("Chunks are generated within this radius")]
+    [Tooltip("Chunks are generated within this radius around the forward load center")]
     public int loadRadius = 4;
 
     [Tooltip("Chunks are only removed after passing this larger radius")]
-    public int unloadRadius = 6;
+    public int unloadRadius = 7;
 
     [Tooltip("Number of asteroids spawned inside each chunk")]
     public int asteroidsPerChunk = 2;
 
     [Tooltip("Minimum and maximum asteroid scale")]
-    public Vector2 minMaxScale = new Vector2(0.5f, 2f);
+    public Vector2 minMaxScale = new Vector2(0.35f, 5f);
+
+    [Header("Forward Preloading")]
+    [Tooltip("How many chunk lengths ahead of the player the load center is shifted")]
+    public float forwardLoadChunks = 4f;
 
     [Header("Generation")]
     [Tooltip("Seed so the asteroid field stays consistent")]
@@ -31,7 +35,7 @@ public class CreateAsteroidField : MonoBehaviour
     private Dictionary<Vector3Int, GameObject> activeChunks =
         new Dictionary<Vector3Int, GameObject>();
 
-    private Vector3Int currentPlayerChunk;
+    private Vector3Int currentLoadCenterChunk;
 
 
     private void Start()
@@ -50,21 +54,9 @@ public class CreateAsteroidField : MonoBehaviour
             return;
         }
 
-        if (asteroidPrefab.GetComponentInChildren<CreateAsteroidField>() != null)
-        {
-            Debug.LogError(
-                "The asteroid prefab contains CreateAsteroidField. " +
-                "Remove the generator script from the asteroid prefab."
-            );
-
-            enabled = false;
-            return;
-        }
-
-        // Unload radius should always be larger
         unloadRadius = Mathf.Max(unloadRadius, loadRadius + 1);
 
-        currentPlayerChunk = GetChunkCoordinate(player.position);
+        currentLoadCenterChunk = GetLoadCenterChunk();
 
         RefreshChunks();
     }
@@ -72,15 +64,23 @@ public class CreateAsteroidField : MonoBehaviour
 
     private void Update()
     {
-        Vector3Int newPlayerChunk =
-            GetChunkCoordinate(player.position);
+        Vector3Int newLoadCenterChunk = GetLoadCenterChunk();
 
-        // Only refresh when crossing into another chunk
-        if (newPlayerChunk != currentPlayerChunk)
+        if (newLoadCenterChunk != currentLoadCenterChunk)
         {
-            currentPlayerChunk = newPlayerChunk;
+            currentLoadCenterChunk = newLoadCenterChunk;
             RefreshChunks();
         }
+    }
+
+
+    private Vector3Int GetLoadCenterChunk()
+    {
+        Vector3 loadCenterPosition =
+            player.position +
+            player.forward * (forwardLoadChunks * chunkSize);
+
+        return GetChunkCoordinate(loadCenterPosition);
     }
 
 
@@ -112,12 +112,11 @@ public class CreateAsteroidField : MonoBehaviour
                     Vector3Int offset =
                         new Vector3Int(x, y, z);
 
-                    // Makes the loaded area spherical instead of cubic
                     if (offset.magnitude > loadRadius)
                         continue;
 
                     Vector3Int chunkCoordinate =
-                        currentPlayerChunk + offset;
+                        currentLoadCenterChunk + offset;
 
                     if (!activeChunks.ContainsKey(chunkCoordinate))
                     {
@@ -134,15 +133,15 @@ public class CreateAsteroidField : MonoBehaviour
         List<Vector3Int> chunksToRemove =
             new List<Vector3Int>();
 
+        Vector3Int playerChunk =
+            GetChunkCoordinate(player.position);
+
         foreach (KeyValuePair<Vector3Int, GameObject> pair in activeChunks)
         {
             Vector3Int offset =
-                pair.Key - currentPlayerChunk;
+                pair.Key - playerChunk;
 
-            // IMPORTANT:
-            // We don't remove it at the same distance we loaded it.
-            // This creates a buffer and reduces popping.
-            if (offset.magnitude > unloadRadius)
+            if (offset.magnitude > unloadRadius + forwardLoadChunks)
             {
                 Destroy(pair.Value);
                 chunksToRemove.Add(pair.Key);
@@ -173,13 +172,9 @@ public class CreateAsteroidField : MonoBehaviour
 
         activeChunks.Add(chunkCoordinate, chunk);
 
-
-        // Save Unity's current random state
         Random.State previousRandomState = Random.state;
 
-        // Give this chunk a deterministic seed
         Random.InitState(GetChunkSeed(chunkCoordinate));
-
 
         for (int i = 0; i < asteroidsPerChunk; i++)
         {
@@ -209,8 +204,6 @@ public class CreateAsteroidField : MonoBehaviour
                 asteroidPrefab.transform.localScale * scale;
         }
 
-
-        // Restore normal randomness for the rest of your game
         Random.state = previousRandomState;
     }
 
