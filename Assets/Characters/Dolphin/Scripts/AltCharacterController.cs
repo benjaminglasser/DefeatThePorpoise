@@ -3,12 +3,17 @@ using UnityEngine;
 public class AltCharacterController : MonoBehaviour
 {
     [Header("Movement")]
-    public float throttleIncrement = 5f;
-    public float maxThrust = 200f;
-    public float responsiveness = 10f;
+    public float throttleIncrement = 20f;
+    public float maxThrust = 16f;
+    public float responsiveness = 20f;
+    public float minimumThrottle = 1.5f;
 
-    [Tooltip("Minimum throttle so the dolphin is always moving forward")]
-    public float minimumThrottle = 2f;
+    [Tooltip("Maximum physical movement speed")]
+    public float maxSpeed = 15f;
+
+    [Header("Braking")]
+    [Tooltip("How aggressively the dolphin slows down when thrust is released")]
+    public float brakeStrength = 5f;
 
     [Header("Input Smoothing")]
     [Tooltip("Higher = controls react faster")]
@@ -45,11 +50,21 @@ public class AltCharacterController : MonoBehaviour
     [Tooltip("Material used by the ribbon trail")]
     public Material trailMaterial;
 
-    [Tooltip("Velocity where ribbon starts becoming brighter")]
-    public float trailMinBrightnessSpeed = 5f;
+    [Tooltip("Throttle where ribbon begins brightening")]
+    public float trailMinBrightnessThrottle = 1.5f;
 
-    [Tooltip("Velocity where ribbon reaches full brightness")]
-    public float trailFullBrightnessSpeed = 150f;
+    [Tooltip("Throttle where ribbon reaches its target maximum")]
+    public float trailFullBrightnessThrottle = 100f;
+
+    [Tooltip("How quickly the ribbon brightens")]
+    public float ribbonBrightenSpeed = 0.25f;
+
+    [Tooltip("How quickly the ribbon fades")]
+    public float ribbonFadeSpeed = 1f;
+
+    [Range(0f, 1f)]
+    [Tooltip("Maximum value sent to the shader's _speed01")]
+    public float ribbonMaxIntensity = 0.7f;
 
 
     private float throttle;
@@ -61,6 +76,8 @@ public class AltCharacterController : MonoBehaviour
     private float targetRoll;
     private float targetPitch;
     private float targetYaw;
+
+    private float ribbonIntensity;
 
     private Rigidbody rb;
     private AudioSource dolphinSound;
@@ -86,6 +103,7 @@ public class AltCharacterController : MonoBehaviour
         rb.maxAngularVelocity = maxAngularVelocity;
 
         throttle = minimumThrottle;
+        ribbonIntensity = 0f;
 
         if (visualModel != null)
         {
@@ -103,7 +121,11 @@ public class AltCharacterController : MonoBehaviour
 
         if (dolphinSound != null)
         {
-            dolphinSound.volume = throttle * 0.01f;
+            dolphinSound.volume = Mathf.InverseLerp(
+                minimumThrottle,
+                100f,
+                throttle
+            );
         }
     }
 
@@ -162,9 +184,33 @@ public class AltCharacterController : MonoBehaviour
 
     private void ApplyMovement()
     {
-        rb.AddForce(
-            maxThrust * throttle * transform.forward
-        );
+        if (Input.GetKey(KeyCode.Space))
+        {
+            // Accelerating
+            rb.AddForce(
+                maxThrust * throttle * transform.forward
+            );
+        }
+        else
+        {
+            // Gentle idle thrust so the dolphin never fully stops
+            rb.AddForce(
+                maxThrust * minimumThrottle * transform.forward
+            );
+
+            // Active braking
+            rb.AddForce(
+                -rb.linearVelocity * brakeStrength,
+                ForceMode.Acceleration
+            );
+        }
+
+        // Hard speed cap
+        if (rb.linearVelocity.magnitude > maxSpeed)
+        {
+            rb.linearVelocity =
+                rb.linearVelocity.normalized * maxSpeed;
+        }
     }
 
 
@@ -222,20 +268,34 @@ public class AltCharacterController : MonoBehaviour
 
     private void UpdateRibbonBrightness()
     {
-        if (trailMaterial == null || rb == null)
+        if (trailMaterial == null)
             return;
 
-        float speed = rb.linearVelocity.magnitude;
+        // Desired ribbon intensity based on current throttle
+        float targetIntensity = Mathf.InverseLerp(
+            trailMinBrightnessThrottle,
+            trailFullBrightnessThrottle,
+            throttle
+        );
 
-        float speed01 = Mathf.InverseLerp(
-            trailMinBrightnessSpeed,
-            trailFullBrightnessSpeed,
-            speed
+        // Cap the overall maximum
+        targetIntensity *= ribbonMaxIntensity;
+
+        // Brighten slowly, fade faster
+        float changeSpeed =
+            targetIntensity > ribbonIntensity
+            ? ribbonBrightenSpeed
+            : ribbonFadeSpeed;
+
+        ribbonIntensity = Mathf.MoveTowards(
+            ribbonIntensity,
+            targetIntensity,
+            changeSpeed * Time.deltaTime
         );
 
         trailMaterial.SetFloat(
             "_speed01",
-            speed01
+            ribbonIntensity
         );
     }
 }

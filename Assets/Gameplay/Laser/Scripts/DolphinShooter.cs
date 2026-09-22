@@ -107,19 +107,7 @@ public class DolphinShooter : MonoBehaviour
 
             if (orb != null)
             {
-                Debug.Log(
-                    "Laser hit orb: " +
-                    orb.gameObject.name
-                );
-
                 orb.CollectOrb();
-            }
-            else
-            {
-                Debug.LogWarning(
-                    "Laser hit an asteroid-layer object, " +
-                    "but no OrbGather component was found."
-                );
             }
         }
         else
