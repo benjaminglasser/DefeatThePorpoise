@@ -7,6 +7,9 @@ public class AltCharacterController : MonoBehaviour
     public float maxThrust = 200f;
     public float responsiveness = 10f;
 
+    [Tooltip("Minimum throttle so the dolphin is always moving forward")]
+    public float minimumThrottle = 2f;
+
     [Header("Input Smoothing")]
     [Tooltip("Higher = controls react faster")]
     public float inputSmoothness = 5f;
@@ -38,6 +41,16 @@ public class AltCharacterController : MonoBehaviour
     [Tooltip("How much yaw input contributes to visual banking")]
     public float yawBankInfluence = 1f;
 
+    [Header("Ribbon Trail")]
+    [Tooltip("Material used by the ribbon trail")]
+    public Material trailMaterial;
+
+    [Tooltip("Velocity where ribbon starts becoming brighter")]
+    public float trailMinBrightnessSpeed = 5f;
+
+    [Tooltip("Velocity where ribbon reaches full brightness")]
+    public float trailFullBrightnessSpeed = 150f;
+
 
     private float throttle;
 
@@ -55,7 +68,7 @@ public class AltCharacterController : MonoBehaviour
     private Quaternion visualStartingRotation;
 
 
-    private float responseModifier
+    private float ResponseModifier
     {
         get
         {
@@ -72,6 +85,8 @@ public class AltCharacterController : MonoBehaviour
         rb.angularDamping = angularDamping;
         rb.maxAngularVelocity = maxAngularVelocity;
 
+        throttle = minimumThrottle;
+
         if (visualModel != null)
         {
             visualStartingRotation = visualModel.localRotation;
@@ -84,6 +99,7 @@ public class AltCharacterController : MonoBehaviour
         HandleInputs();
         SmoothInputs();
         UpdateVisualMovement();
+        UpdateRibbonBrightness();
 
         if (dolphinSound != null)
         {
@@ -92,14 +108,19 @@ public class AltCharacterController : MonoBehaviour
     }
 
 
+    private void FixedUpdate()
+    {
+        ApplyMovement();
+        ApplyRotation();
+    }
+
+
     private void HandleInputs()
     {
-        // Desired rotation input
         targetRoll = Input.GetAxis("Roll");
         targetPitch = Input.GetAxis("Pitch");
         targetYaw = Input.GetAxis("Yaw");
 
-        // Hold Space to increase thrust
         if (Input.GetKey(KeyCode.Space))
         {
             throttle += throttleIncrement * Time.deltaTime;
@@ -109,7 +130,11 @@ public class AltCharacterController : MonoBehaviour
             throttle -= throttleIncrement * Time.deltaTime;
         }
 
-        throttle = Mathf.Clamp(throttle, 0f, 100f);
+        throttle = Mathf.Clamp(
+            throttle,
+            minimumThrottle,
+            100f
+        );
     }
 
 
@@ -135,14 +160,16 @@ public class AltCharacterController : MonoBehaviour
     }
 
 
-    private void FixedUpdate()
+    private void ApplyMovement()
     {
-        // Forward thrust
         rb.AddForce(
             maxThrust * throttle * transform.forward
         );
+    }
 
-        // Physical rotation
+
+    private void ApplyRotation()
+    {
         Vector3 torque = new Vector3(
             pitch,
             yaw,
@@ -150,7 +177,7 @@ public class AltCharacterController : MonoBehaviour
         );
 
         rb.AddRelativeTorque(
-            torque * responseModifier
+            torque * ResponseModifier
         );
     }
 
@@ -160,13 +187,10 @@ public class AltCharacterController : MonoBehaviour
         if (visualModel == null)
             return;
 
-        // Roll input banks the dolphin.
-        // Yaw input ALSO banks the dolphin into the turn.
         float bankInput =
             (-roll * rollBankInfluence) +
             (-yaw * yawBankInfluence);
 
-        // Clamp so combined yaw + roll can't produce absurd banking.
         bankInput = Mathf.Clamp(
             bankInput,
             -1f,
@@ -176,7 +200,6 @@ public class AltCharacterController : MonoBehaviour
         float bank =
             bankInput * visualBankAngle;
 
-        // Slight visual exaggeration of pitch
         float nosePitch =
             pitch * visualPitchAngle;
 
@@ -194,5 +217,25 @@ public class AltCharacterController : MonoBehaviour
                 targetRotation,
                 visualTurnSmoothness * Time.deltaTime
             );
+    }
+
+
+    private void UpdateRibbonBrightness()
+    {
+        if (trailMaterial == null || rb == null)
+            return;
+
+        float speed = rb.linearVelocity.magnitude;
+
+        float speed01 = Mathf.InverseLerp(
+            trailMinBrightnessSpeed,
+            trailFullBrightnessSpeed,
+            speed
+        );
+
+        trailMaterial.SetFloat(
+            "_speed01",
+            speed01
+        );
     }
 }
